@@ -21,13 +21,8 @@ jobs:
           instance_name: 'actionsdemo'
           zone: 'asia-south1-c'
           ssh_private_key: '${{ secrets.SSH_PRIVATE_KEY }}'
- 
-      - name: Upload Code (Optional)
-        run: |
-          echo "## Uploading code via SSH"
-          scp -o StrictHostKeyChecking=no -r . arjun@${{ secrets.SERVER_IP }}:/var/www/html 
-
-      - name: Restart Nginx
-        run: |
-          echo "## Restarting Nginx"
-          gcloud ssh arjun@${{ secrets.SERVER_IP }} --command "sudo systemctl restart nginx"
+          command: 
+            scp -o StrictHostKeyChecking=no -r . arjun@${{ secrets.SERVER_IP }}:/var/www/html 
+            sudo chown -R arjun:nginx /var/www/html
+            sudo chmod -R 644 /var/www/html/*
+            sudo systemctl restart nginx
