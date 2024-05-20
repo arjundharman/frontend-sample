@@ -20,10 +20,9 @@ jobs:
           ssh-add ~/.ssh/id_rsa
 
       - name: Upload Code (Optional)
-        if: ${{ secrets.SSH_PRIVATE_KEY != '' }}
         run: |
           echo "## Uploading code via SSH"
-          scp -o StrictHostKeyChecking=no -r . arjun@${{ secrets.SERVER_IP }}:/var/www/html
+          scp -o StrictHostKeyChecking=no -r . arjun@${{ secrets.SERVER_IP }}:/var/www/html 
 
       - name: Use gcloud CLI
         uses: google-github-actions/setup-gcloud@v0.2.0
