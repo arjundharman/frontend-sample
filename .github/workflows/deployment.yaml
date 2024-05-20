@@ -8,27 +8,24 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Install SSH Agent
-        run: |
-          echo "## Setting up SSH"
-          mkdir ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          eval "$(ssh-agent -s)"
-          ssh-add ~/.ssh/id_rsa
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}'
 
+      - id: 'compute-ssh'
+        uses: 'google-github-actions/ssh-compute@v1'
+        with:
+          instance_name: 'actionsdemo'
+          zone: 'asia-south1-c'
+          ssh_private_key: '${{ secrets.SSH_PRIVATE_KEY }}'
+ 
       - name: Upload Code (Optional)
         run: |
           echo "## Uploading code via SSH"
           scp -o StrictHostKeyChecking=no -r . arjun@${{ secrets.SERVER_IP }}:/var/www/html 
-
-      - name: Use gcloud CLI
-        uses: google-github-actions/setup-gcloud@v0.2.0
-        with:
-          service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-          project_id: principal-oxide-400310
 
       - name: Restart Nginx
         run: |
